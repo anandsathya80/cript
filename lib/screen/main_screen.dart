@@ -1,4 +1,5 @@
 import 'package:cript/screen/widget/card_main_screen.dart';
+import 'package:cript/screen/widget/header_main_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -15,8 +16,16 @@ class _MainScreenState extends State<MainScreen> {
       body: SingleChildScrollView(
         child: Padding(
             padding: EdgeInsets.all(12),
-            child: Column(
-              children: [Text('hi, wellcome to cript')],
+            child: Center(
+              child: Column(
+                children: [
+                  HeaderMain(),
+                  SizedBox(
+                    height: 100,
+                  ),
+                  CardMainScreen(),
+                ],
+              ),
             )),
       ),
     );

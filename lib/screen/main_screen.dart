@@ -1,33 +1,19 @@
 import 'package:cript/screen/widget/card_main_screen.dart';
-import 'package:cript/screen/widget/header_main_screen.dart';
 import 'package:flutter/material.dart';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
+class HomePage extends StatefulWidget {
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-            padding: EdgeInsets.all(12),
-            child: Center(
-              child: Column(
-                children: [
-                  HeaderMain(),
-                  SizedBox(
-                    height: 100,
-                  ),
-                  CardMainScreen(),
-                ],
-              ),
-            )),
+      appBar: AppBar(
+        title: Text('CriptR'),
       ),
+      body: CardMainScreen(),
     );
   }
 }

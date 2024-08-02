@@ -1,3 +1,4 @@
+import 'package:cript/detail_screen/detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class CardMainScreen extends StatefulWidget {
@@ -12,16 +13,29 @@ class CardMainScreen extends StatefulWidget {
 class _CardMainScreenState extends State<CardMainScreen> {
   final double _borderRadius = 24;
   var items = [
-    PlaceInfo('Dubai Mall Food Court', Color(0xff6DC8F3), Color(0xff73A1F9),
-        4.4, 'Dubai · In The Dubai Mall', 'Cosy · Casual · Good for kids'),
-    PlaceInfo('Hamriyah Food Court', Color(0xffFFB157), Color(0xffFFA057), 3.7,
-        'Sharjah', 'All you can eat · Casual · Groups'),
-    PlaceInfo('Gate of Food Court', Color(0xffFF5B95), Color(0xffF8556D), 4.5,
-        'Dubai · Near Dubai Aquarium', 'Casual · Groups'),
-    PlaceInfo('Express Food Court', Color(0xffD76EF5), Color(0xff8F7AFE), 4.1,
-        'Dubai', 'Casual · Good for kids · Delivery'),
-    PlaceInfo('BurJuman Food Court', Color(0xff42E695), Color(0xff3BB2B8), 4.2,
-        'Dubai · In BurJuman', '...'),
+    PlaceInfo(
+        'Hamriyah Food Court',
+        const Color(0xffFFB157),
+        const Color(0xffFFA057),
+        3.7,
+        'Sharjah',
+        'All you can eat · Casual · Groups'),
+    PlaceInfo(
+        'Gate of Food Court',
+        const Color(0xffFF5B95),
+        const Color(0xffF8556D),
+        4.5,
+        'Dubai · Near Dubai Aquarium',
+        'Casual · Groups'),
+    PlaceInfo(
+        'Express Food Court',
+        const Color(0xffD76EF5),
+        const Color(0xff8F7AFE),
+        4.1,
+        'Dubai',
+        'Casual · Good for kids · Delivery'),
+    PlaceInfo('BurJuman Food Court', const Color(0xff42E695),
+        const Color(0xff3BB2B8), 4.2, 'Dubai · In BurJuman', '...'),
   ];
 
   @override
@@ -34,21 +48,31 @@ class _CardMainScreenState extends State<CardMainScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Stack(
               children: <Widget>[
-                Container(
-                  height: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(_borderRadius),
-                    gradient: LinearGradient(colors: [
-                      items[index].startColor,
-                      items[index].endColor
-                    ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                    boxShadow: [
-                      BoxShadow(
-                        color: items[index].endColor,
-                        blurRadius: 12,
-                        offset: Offset(0, 6),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DetailScreen(),
                       ),
-                    ],
+                    );
+                  },
+                  child: Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(_borderRadius),
+                      gradient: LinearGradient(colors: [
+                        items[index].startColor,
+                        items[index].endColor
+                      ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                      boxShadow: [
+                        BoxShadow(
+                          color: items[index].endColor,
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Positioned(
@@ -56,7 +80,7 @@ class _CardMainScreenState extends State<CardMainScreen> {
                   bottom: 0,
                   top: 0,
                   child: CustomPaint(
-                    size: Size(100, 150),
+                    size: const Size(100, 150),
                     painter: CustomCardShapePainter(_borderRadius,
                         items[index].startColor, items[index].endColor),
                   ),
@@ -65,12 +89,12 @@ class _CardMainScreenState extends State<CardMainScreen> {
                   child: Row(
                     children: <Widget>[
                       Expanded(
+                        flex: 2,
                         child: Image.asset(
                           'assets/icon.png',
                           height: 64,
                           width: 64,
                         ),
-                        flex: 2,
                       ),
                       Expanded(
                         flex: 4,
@@ -80,33 +104,33 @@ class _CardMainScreenState extends State<CardMainScreen> {
                           children: <Widget>[
                             Text(
                               items[index].name,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.white,
                                   fontFamily: 'Avenir',
                                   fontWeight: FontWeight.w700),
                             ),
                             Text(
                               items[index].category,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Avenir',
                               ),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Row(
                               children: <Widget>[
-                                Icon(
+                                const Icon(
                                   Icons.location_on,
                                   color: Colors.white,
                                   size: 16,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 8,
                                 ),
                                 Flexible(
                                   child: Text(
                                     items[index].location,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'Avenir',
                                     ),
@@ -124,7 +148,7 @@ class _CardMainScreenState extends State<CardMainScreen> {
                           children: <Widget>[
                             Text(
                               items[index].rating.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.white,
                                   fontFamily: 'Avenir',
                                   fontSize: 18,

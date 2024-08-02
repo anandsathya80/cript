@@ -1,4 +1,4 @@
-import 'package:cript/screen/main_screen.dart';
+import 'package:cript/main_screen/main_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

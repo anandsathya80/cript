@@ -1,4 +1,4 @@
-import 'package:cript/screen/widget/card_main_screen.dart';
+import 'package:cript/main_screen/widget/card_main_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {

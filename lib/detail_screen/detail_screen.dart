@@ -58,7 +58,7 @@ class DetailScreen extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Image.network(
-                        'https://cryptoicons.org/api/icon/${data['symbol'].toLowerCase()}/64',
+                        data['image']['large'],
                         height: 64,
                         width: 64,
                         errorBuilder: (context, error, stackTrace) {
@@ -94,7 +94,7 @@ class DetailScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Price: \$${data['price_usd'] ?? '0.00'}',
+                            'Price: \$${data['current_price'] ?? '0.00'}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontFamily: 'Avenir',
@@ -102,7 +102,7 @@ class DetailScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Change (24h): ${data['percent_change_24h'] ?? '0.00'}%',
+                            'Change (24h): ${data['price_change_percentage_24h'] ?? '0.00'}%',
                             style: const TextStyle(
                               color: Colors.white70,
                               fontFamily: 'Avenir',
@@ -125,7 +125,7 @@ class DetailScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            data['rank'].toString(),
+                            data['market_cap_rank'].toString(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontFamily: 'Avenir',

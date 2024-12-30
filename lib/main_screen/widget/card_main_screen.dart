@@ -1,6 +1,9 @@
 import 'package:cript/detail_screen/detail_screen.dart';
 import 'package:flutter/material.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 class CardMainScreen extends StatefulWidget {
   CardMainScreen({
     super.key,
@@ -12,173 +15,169 @@ class CardMainScreen extends StatefulWidget {
 
 class _CardMainScreenState extends State<CardMainScreen> {
   final double _borderRadius = 24;
-  var items = [
-    PlaceInfo(
-        'Hamriyah Food Court',
-        const Color(0xffFFB157),
-        const Color(0xffFFA057),
-        3.7,
-        'Sharjah',
-        'All you can eat · Casual · Groups'),
-    PlaceInfo(
-        'Gate of Food Court',
-        const Color(0xffFF5B95),
-        const Color(0xffF8556D),
-        4.5,
-        'Dubai · Near Dubai Aquarium',
-        'Casual · Groups'),
-    PlaceInfo(
-        'Express Food Court',
-        const Color(0xffD76EF5),
-        const Color(0xff8F7AFE),
-        4.1,
-        'Dubai',
-        'Casual · Good for kids · Delivery'),
-    PlaceInfo('BurJuman Food Court', const Color(0xff42E695),
-        const Color(0xff3BB2B8), 4.2, 'Dubai · In BurJuman', '...'),
-  ];
+  late Future<List<CryptoData>?> cryptoDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    cryptoDataFuture = fetchCryptoData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Stack(
-              children: <Widget>[
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const DetailScreen(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    height: 150,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(_borderRadius),
-                      gradient: LinearGradient(colors: [
-                        items[index].startColor,
-                        items[index].endColor
-                      ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                      boxShadow: [
-                        BoxShadow(
-                          color: items[index].endColor,
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
+    return FutureBuilder<List<CryptoData>?>(
+      future: cryptoDataFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No data available'));
+        }
+
+        final items = snapshot.data!;
+        return ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Stack(
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () async {
+                        final data = await fetchCryptoDetails(items[index].id);
+                        if (data != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailScreen(data: data),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'Failed to fetch details for ${items[index].name}'),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        height: 150,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(_borderRadius),
+                          gradient: LinearGradient(
+                            colors: [
+                              items[index].startColor,
+                              items[index].endColor,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: items[index].endColor,
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  top: 0,
-                  child: CustomPaint(
-                    size: const Size(100, 150),
-                    painter: CustomCardShapePainter(_borderRadius,
-                        items[index].startColor, items[index].endColor),
-                  ),
-                ),
-                Positioned.fill(
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        flex: 2,
-                        child: Image.asset(
-                          'assets/icon.png',
-                          height: 64,
-                          width: 64,
-                        ),
-                      ),
-                      Expanded(
-                        flex: 4,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              items[index].name,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Avenir',
-                                  fontWeight: FontWeight.w700),
-                            ),
-                            Text(
-                              items[index].category,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Avenir',
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
+                    Positioned.fill(
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            flex: 2,
+                            child: Container(),
+                            // Icon(CryptoFontIcons().items[index].symbol),
+                          ),
+                          Expanded(
+                            flex: 4,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                const Icon(
-                                  Icons.location_on,
-                                  color: Colors.white,
-                                  size: 16,
+                                Text(
+                                  items[index].name,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Avenir',
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                                const SizedBox(
-                                  width: 8,
+                                Text(
+                                  items[index].symbol,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Avenir',
+                                  ),
                                 ),
-                                Flexible(
-                                  child: Text(
-                                    items[index].location,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: 'Avenir',
-                                    ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "\$${items[index].priceUsd}",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Avenir',
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  "${items[index].percentChange24h}% (24h)",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Avenir',
                                   ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(
-                              items[index].rating.toString(),
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Avenir',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
   }
 }
 
-class PlaceInfo {
+class CryptoData {
+  final String id;
   final String name;
-  final String category;
-  final String location;
-  final double rating;
+  final String symbol;
+  final String priceUsd;
+  final String percentChange24h;
   final Color startColor;
   final Color endColor;
 
-  PlaceInfo(this.name, this.startColor, this.endColor, this.rating,
-      this.location, this.category);
+  CryptoData({
+    required this.id,
+    required this.name,
+    required this.symbol,
+    required this.priceUsd,
+    required this.percentChange24h,
+    required this.startColor,
+    required this.endColor,
+  });
+
+  factory CryptoData.fromJson(Map<String, dynamic> json) {
+    return CryptoData(
+      id: json['id'],
+      name: json['name'],
+      symbol: json['symbol'],
+      priceUsd: json['price_usd'],
+      percentChange24h: json['percent_change_24h'],
+      startColor: Colors.blue,
+      endColor: Colors.green,
+    );
+  }
 }
 
 class CustomCardShapePainter extends CustomPainter {
@@ -211,5 +210,33 @@ class CustomCardShapePainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
+  }
+}
+
+Future<List<CryptoData>?> fetchCryptoData() async {
+  final response =
+      await http.get(Uri.parse('https://api.coinlore.net/api/tickers/'));
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body)['data'];
+    return data.map((item) => CryptoData.fromJson(item)).toList();
+  } else {
+    throw Exception('Failed to load data');
+  }
+}
+
+Future<Map<String, dynamic>?> fetchCryptoDetails(String id) async {
+  final url = 'https://api.coinlore.net/api/ticker/?id=$id';
+  try {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.isNotEmpty ? data[0] : null; // Ambil item pertama
+    } else {
+      print('Failed to load details: ${response.statusCode}');
+      return null;
+    }
+  } catch (e) {
+    print('Error fetching details: $e');
+    return null;
   }
 }
